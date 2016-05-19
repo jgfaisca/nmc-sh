@@ -1,0 +1,2 @@
+# nmc-sh
+Namecoin scripts
