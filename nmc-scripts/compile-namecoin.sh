@@ -33,7 +33,7 @@ CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768"
         --with-pic \
         --without-gui \
         --enable-upnp-default
-make && make install
+        make && make install
 
 cd / \
           && apt-get autoremove -y \
