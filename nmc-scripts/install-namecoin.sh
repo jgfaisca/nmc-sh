@@ -22,3 +22,7 @@ echo "rpcpassword=`openssl rand -hex 32/`" >> $DIR/.namecoin/namecoin.conf &&
 echo "rpcport=8336" >> $DIR/.namecoin/namecoin.conf &&
 echo "daemon=1" >> $DIR/.namecoin/namecoin.conf &&
 
+# -- Clean --
+cd / \
+    && apt-get autoremove -y \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
