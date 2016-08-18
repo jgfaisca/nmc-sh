@@ -18,6 +18,7 @@ apt-get update && apt-get install -y libboost-all-dev \
 add-apt-repository -y ppa:bitcoin/bitcoin && sudo apt-get update \
         && apt-get install libdb4.8-dev libdb4.8++-dev
 
+# -- Clone Namecoin source repository --
 [ -d "namecoin-core" ] || git clone https://github.com/namecoin/namecoin-core.git
 
 # -- Compile Namecoin --
