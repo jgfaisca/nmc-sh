@@ -1,7 +1,7 @@
 
 #!/bin/bash
 #
-# Create namecoin address
+# Create Namecoin address
 #
 
 namecoind getnewaddress &&
