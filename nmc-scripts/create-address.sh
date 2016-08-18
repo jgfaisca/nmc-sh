@@ -4,5 +4,5 @@
 # Create Namecoin address
 #
 
-namecoind getnewaddress &&
-namecoind listreceivedbyaddress 0 true
+namecoin-cli getnewaddress &&
+namecoin-cli listreceivedbyaddress 0 true
