@@ -12,7 +12,7 @@ apt-get update && apt-get install -y libboost-all-dev \
         libevent-dev wget bsdmainutils autoconf \
         apg libqrencode-dev libcurl4-openssl-dev \
         automake make libssl-dev libminiupnpc-dev \
-        pkg-config libdb++-devv libzmq3-dev
+        pkg-config libzmq3-dev
 
 # -- Install BerkeleyDB 4.8 (required for the wallet) --
 add-apt-repository -y ppa:bitcoin/bitcoin && sudo apt-get update \
