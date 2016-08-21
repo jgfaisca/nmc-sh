@@ -11,7 +11,7 @@ apt-get update && apt-get install -y libboost-all-dev \
         libevent-dev wget bsdmainutils autoconf \
         apg libqrencode-dev libcurl4-openssl-dev \
         automake make libssl-dev libminiupnpc-dev \
-        pkg-config libdb++-devv libzmq3-dev
+        pkg-config libzmq3-dev
 
 # -- Clone Namecoin source repository --
 [ -d "namecoin-core" ] || git clone https://github.com/namecoin/namecoin-core.git
