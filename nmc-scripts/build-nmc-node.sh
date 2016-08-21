@@ -12,10 +12,12 @@ apt-get update && apt-get install -y libboost-all-dev \
         libevent-dev wget bsdmainutils autoconf \
         apg libqrencode-dev libcurl4-openssl-dev \
         automake make libssl-dev libminiupnpc-dev \
-        pkg-config libzmq3-dev software-properties-common
+        pkg-config libzmq3-dev 
 
 # -- Install BerkeleyDB 4.8 (required for the wallet) --
-add-apt-repository -y ppa:bitcoin/bitcoin && apt-get update \
+apt-get install -y software-properties-common \
+        && add-apt-repository -y ppa:bitcoin/bitcoin \
+        && apt-get update \
         && apt-get install -y libdb4.8-dev libdb4.8++-dev
 
 # -- Clone Namecoin source repository --
@@ -25,9 +27,8 @@ add-apt-repository -y ppa:bitcoin/bitcoin && apt-get update \
 cd namecoin-core
 ./autogen.sh
 # CXX flags tuned to conserve memory
-CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768"
 ./configure \
-        CXXFLAGS="$CXXFLAGS" \
+        CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768" \
         --enable-cxx \
         --disable-shared \
         --with-pic \
@@ -36,6 +37,10 @@ CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768"
 make && make install
 
 # -- Clean --
-cd / \
-        && apt-get autoremove -y \
-        && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+cd .. 
+rm -rf namecoin-core       
+apt-get autoremove -y
+apt-get clean 
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+exit 0
