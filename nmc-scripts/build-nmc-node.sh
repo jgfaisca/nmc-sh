@@ -23,7 +23,7 @@ apt-get install -y software-properties-common \
 # -- Clone Namecoin source repository --
 [ -d "namecoin-core" ] || git clone https://github.com/namecoin/namecoin-core.git
 
-# -- Compile Namecoin --
+# -- Build and install Namecoin --
 cd namecoin-core
 ./autogen.sh
 # CXX flags tuned to conserve memory
