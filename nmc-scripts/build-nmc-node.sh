@@ -16,7 +16,7 @@ apt-get update && apt-get install -y libboost-all-dev \
 
 # -- Install BerkeleyDB 4.8 (required for the wallet) --
 add-apt-repository -y ppa:bitcoin/bitcoin && apt-get update \
-        && apt-get install libdb4.8-dev libdb4.8++-dev
+        && apt-get install -y libdb4.8-dev libdb4.8++-dev
 
 # -- Clone Namecoin source repository --
 [ -d "namecoin-core" ] || git clone https://github.com/namecoin/namecoin-core.git
