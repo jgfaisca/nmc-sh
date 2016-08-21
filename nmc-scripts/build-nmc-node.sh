@@ -12,10 +12,10 @@ apt-get update && apt-get install -y libboost-all-dev \
         libevent-dev wget bsdmainutils autoconf \
         apg libqrencode-dev libcurl4-openssl-dev \
         automake make libssl-dev libminiupnpc-dev \
-        pkg-config libzmq3-dev
+        pkg-config libzmq3-dev software-properties-common
 
 # -- Install BerkeleyDB 4.8 (required for the wallet) --
-add-apt-repository -y ppa:bitcoin/bitcoin && sudo apt-get update \
+add-apt-repository -y ppa:bitcoin/bitcoin && apt-get update \
         && apt-get install libdb4.8-dev libdb4.8++-dev
 
 # -- Clone Namecoin source repository --
