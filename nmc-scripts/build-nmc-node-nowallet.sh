@@ -16,22 +16,24 @@ apt-get update && apt-get install -y libboost-all-dev \
 # -- Clone Namecoin source repository --
 [ -d "namecoin-core" ] || git clone https://github.com/namecoin/namecoin-core.git
 
-# -- Compile namecoin --
+# -- Build Namecoin --
 cd namecoin-core
 ./autogen.sh
 # CXX flags tuned to conserve memory
-CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768"
 ./configure \
-        CXXFLAGS="$CXXFLAGS" \
+        CXXFLAGS="--param ggc-min-expand=1 --param ggc-min-heapsize=32768" \
         --enable-cxx \
         --disable-shared \
         --with-pic \
         --without-gui \
-        --enable-upnp-default \
-        --disable-wallet
+        --enable-upnp-default
 make && make install
 
 # -- Clean --
-cd / \
-        && apt-get autoremove -y \
-        && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+cd .. 
+rm -rf namecoin-core       
+apt-get autoremove -y
+apt-get clean 
+rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+exit 0
