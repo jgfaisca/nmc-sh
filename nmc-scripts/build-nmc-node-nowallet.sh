@@ -16,7 +16,7 @@ apt-get update && apt-get install -y libboost-all-dev \
 # -- Clone Namecoin source repository --
 [ -d "namecoin-core" ] || git clone https://github.com/namecoin/namecoin-core.git
 
-# -- Build Namecoin --
+# -- Build and install Namecoin --
 cd namecoin-core
 ./autogen.sh
 # CXX flags tuned to conserve memory
