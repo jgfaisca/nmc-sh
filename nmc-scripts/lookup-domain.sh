@@ -1,4 +1,18 @@
 #!/bin/bash
+#########################################################
+# 
+# Lookup Namecoin domain using RPC connection on localhost
+# 
+# usage: 
+# ./lookup-domain.sh <domain_name>
+#
+# example:
+# ./lookup-domain.sh okturtles
+#
+# authors:
+# jose G. Faisca <jose.faisca@gmail.com>
+#
+#########################################################
 
 if [ $# -ne 1 ]; then
   echo
@@ -8,7 +22,7 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-DATADIR=/data/namecoin
+DATADIR=$HOME/.namecoin
 CONF=namecoin.conf
 HOST="127.0.0.1"
 NAME="d/$1"
