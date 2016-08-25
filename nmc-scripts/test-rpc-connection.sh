@@ -8,6 +8,9 @@
 # example:
 # ./test-rpc-connection /home/myuser/.namecoin
 #
+# authors:
+# jose G. Faisca <jose.faisca@gmail.com>
+#
 
 if [ $# -ne 1 ]; then
   echo
