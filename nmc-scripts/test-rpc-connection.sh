@@ -1,5 +1,6 @@
 #!/bin/bash
-#
+#########################################################
+# 
 # Test Namecoin RPC connection on localhost
 # 
 # usage: 
@@ -11,6 +12,7 @@
 # authors:
 # jose G. Faisca <jose.faisca@gmail.com>
 #
+#########################################################
 
 if [ $# -ne 1 ]; then
   echo
