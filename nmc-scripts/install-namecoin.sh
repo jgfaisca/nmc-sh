@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Install Namecoin using a repository
+#
 
 OSVERSION="xUbuntu_16.04"
 
