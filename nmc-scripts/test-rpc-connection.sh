@@ -30,8 +30,9 @@ RPC_USER=$(cat $DATADIR/$CONF | grep rpcuser | awk -F '[/=]' '{print $2}')
 RPC_PASS=$(cat $DATADIR/$CONF | grep rpcpassword | awk -F '[/=]' '{print $2}')
 RPC_PORT=$(cat $DATADIR/$CONF | grep rpcport | awk -F '[/=]' '{print $2}')
 
-curl \
-        --user $RPC_USER:$RPC_PASS \
+JSON=$(curl -D -sS --user $RPC_USER:$RPC_PASS \
         --data-binary '{"jsonrpc":"1.0","id":"curltext","method":"getinfo","params":[]}' \
         -H 'content-type: text/plain;' \
-        http://$HOST:$RPC_PORT
+        http://$HOST:$RPC_PORT)
+
+echo $JSON | json_pp
