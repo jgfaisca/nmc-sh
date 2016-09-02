@@ -1,4 +1,6 @@
 
+// Generic JSON-RPC call (Node.js)
+
 var request = require('request');
 
 var headers = {
