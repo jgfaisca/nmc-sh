@@ -1,7 +1,7 @@
 {
   	"ip"      : "193.137.75.148",
-	"email"	  : "hostmaster@chainlab.tk",	
-	"info"	  : "Blockchain technology research lab",	
+	"email"	  : "hostmaster@example.com",	
+	"info"	  : "Domain registration JSON example",	
  	"loc"	  : "38.758211,-9.153099",
 	"service" : [ ["smtp", "tcp", 10, 0, 25, "mail"] ],
         "tls": { 
@@ -14,6 +14,6 @@
     	"map": 
 	{ 
 		"www": { "alias": "" },
-		"mail": { "ns": ["ns01.freenom.com", "ns02.freenom.com", "ns03.freenom.com"] }
+		"mail": { "ns": ["ns01.nserver.com", "ns02.nserver.com", "ns03.nserver.com"] }
 	}
 }
