@@ -14,21 +14,21 @@
 # for the domain
 # http://dot-bit.org/Namespace:Domain_names_v2.0
 # 5 - Run this script 
-# ./register_bit_domain.sh <name>
+# ./register-bit-domain.sh <name>
 # <name> is your domain name without .bit, in lowercase.
 # 
 # Example: to register example.bit domain, 1st create the example.json 
 # file with nameserver information and run:
-# ./register_bit_domain.sh 'example'
+# ./register-bit-domain.sh 'example'
 #
 # 6 - Wait at least 12 blocks, which is generally between 2  and 6 hours 
 # (depending on how active the network is), then update your domain by 
 # running the script again:
-# ./register_bit_domain.sh '<name>'
+# ./register-bit-domain.sh '<name>'
 #
 #
 # authors:
-# Jose Faisca <jose.faisca@gmail.com>
+# Jose G. Faisca <jose.faisca@gmail.com>
 #
 ###############################################################################
 
@@ -42,6 +42,7 @@ JSONFILE="$NAME.json" 		# JSON file with nameserver information
 NEWFILE="$NAME.new" 		# output of name_new command
 FIRSTUFILE="$NAME.firstupdate" 	# output of name_firstupdate command
 UPDATEFILE="$NAME.update"	# output of name_update command
+DATADIR="$HOME/namecoin"        # Namecoin data directory
 
 check_domain(){
  domain=$1
@@ -80,27 +81,27 @@ get_json(){
 name_firstupdate(){
   get_rand
   get_json
-  cmd="namecoind name_firstupdate d/$NAME $RAND $LONGHEX '${JSONVALUE}' > $FIRSTUFILE"
+  cmd="namecoin-cli -datadir=$DATADIR name_firstupdate d/$NAME $RAND $LONGHEX '${JSONVALUE}' > $FIRSTUFILE"
   eval $cmd
   cat $FIRSTUFILE
 }
 
 name_update(){
   get_json
-  cmd="namecoind name_update d/$NAME $RAND '${JSONVALUE}' > $UPDATEFILE"
+  cmd="namecoin-cli -datadir=$DATADIR name_update d/$NAME $RAND '${JSONVALUE}' > $UPDATEFILE"
   eval $cmd
   cat $UPDATEFILE
 }
 
 name_new(){
-  cmd="namecoind name_new d/$NAME > $NEWFILE"
+  cmd="namecoin-cli -datadir=$DATADIR name_new d/$NAME > $NEWFILE"
   eval $cmd
   cat $NEWFILE
 }
 
 name_show(){
   { 
-  namecoind name_show d/$NAME 
+  namecoin-cli -datadir=$DATADIR name_show d/$NAME 
   } &> /dev/null
  if [ $? -eq 0 ]; then
     return 0
@@ -130,7 +131,7 @@ FILE="$1"
 get_confirmations(){
  get_rand
  result="" 
- result=$(namecoind listtransactions | grep -B 1 -A 0 "$LONGHEX")
+ result=$(namecoin-cli -datadir=$DATADIR listtransactions | grep -B 1 -A 0 "$LONGHEX")
  IFS=': ' read -a array <<< $result
  CONF=${array[1]}
  CONF="${CONF//,}"
@@ -256,7 +257,7 @@ else
   echo "Wait at least 12 blocks, which is generally between 2 and 6 hours " 
   echo "then run this script again to update your domain."
   echo ""
-  echo "DO NOT SHUTDOWN namecoind"
+  echo "DO NOT SHUTDOWN namecoin"
   echo ""
   echo "Running ..."
   name_new && echo ".. DONE .."
