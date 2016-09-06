@@ -38,16 +38,13 @@ function call(){
         --data-binary '{"jsonrpc":"1.0","id":"curltext","method":"'"${method}"'","params":["'"${params}"'"]}' \
         -H 'content-type: text/plain;' \
         http://${HOST}:${RPC_PORT})
-  echo $return
 }
 
-function print_json(){
-  json_pp -v >/dev/null 2>&1
-  if [ $? -ne 0 ]; then
-     echo "$1"
-  else
-     echo "$1" | json_pp
-  fi
-}
+call dumpprivkey "$1"
 
-print_json $(call dumpprivkey "$1")
+json_pp -v >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+     echo $return
+ else
+     echo $return | json_pp
+fi
