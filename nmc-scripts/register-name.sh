@@ -11,13 +11,14 @@
 # 3 - Transfer namecoins (NMC) to your wallet using an exchage
 # https://namecoin.org/?p=exchanges 
 # 4 - Create a JSON-encoded file (<name>.json) with name information 
+# For domain name JSON check http://dot-bit.org/tools/domainCheck.php
 # 5 - Run this script 
 # ./register-name.sh <name>
-# <name> is your name, in lowercase.
+# <name> is your Namecoin name, in lowercase.
 # 
-# Example: to register Bob id, 1st create the example.json 
-# file with id information and run:
-# ./register-name.sh 'id/Bob'
+# Example: to register example.bit domain, 1st create the example.json
+# file with name information and run:
+# ./register-name.sh 'd/example'
 #
 # 6 - Wait at least 12 blocks, which is generally between 2  and 6 hours 
 # (depending on how active the network is), then update your name by 
