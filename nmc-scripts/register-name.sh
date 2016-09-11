@@ -78,17 +78,14 @@ check_size(){
 	if [ "$size" -gt 63 ]; then
 		echo "The name $NAME must be 63 characters or less."
                 return 1
-        else
-                return 0
         fi
   else
   	if [ "$size" -gt 255 ]; then
 		echo "The name $NAME must be 255 characters or less."
     		return 1
-  	else
-    		return 0
  	fi
   fi
+  return 0
 }
 
 check_domain(){
