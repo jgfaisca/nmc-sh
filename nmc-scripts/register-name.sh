@@ -1,30 +1,35 @@
 #!/bin/bash 
 ###############################################################################
 #
-# Script to register Namecoin names
+# Script to register Namecoin names (namespace/name)
 #
 # How to use:
 # 1 - Install and configure the namecoin software
 # https://wiki.namecoin.org/index.php?title=Install_and_Configure_Namecoin
-# 2 - Print your namecoin wallet address using the command:
-# namecoind listreceivedbyaddress 0 true 
+# 2 - Print your Namecoin wallet address using the command:
+# namecoin-cli listreceivedbyaddress 0 true
 # 3 - Transfer namecoins (NMC) to your wallet using an exchage
 # https://namecoin.org/?p=exchanges 
-# 4 - Create a JSON-encoded file (<name>.json) with name information 
+# 4 - Create <name.json> (a JSON-encoded file) with name information 
 # For domain name JSON check http://dot-bit.org/tools/domainCheck.php
 # 5 - Run this script 
-# ./register-name.sh <name>
-# <name> is your Namecoin name, in lowercase.
+# ./register-name.sh '<namespace/name>'
+# <namespace/name> is your Namecoin name
 # 
-# Example: to register example.bit domain, 1st create the example.json
+# Example: to register example.bit domain, first create the example.json
 # file with name information and run:
 # ./register-name.sh 'd/example'
 #
-# 6 - Wait at least 12 blocks, which is generally between 2  and 6 hours 
-# (depending on how active the network is), then update your name by 
-# running the script again:
-# ./register-name.sh '<name>'
+# The key d/example signifies a record stored in the DNS namespace d
+# with the name example and corresponds to the record for the example.bit
+# website. The content of d/example is expected  to conform to the
+# DNS namespace specification
 #
+# 6 - Wait at least 12 blocks, then update your name by running
+# the script again:
+# ./register-name.sh '<namespace/name>'
+# 7 - To update the registered name, modify <name>.json and run:
+# ./register-name.sh '<namespace/name>' --update
 #
 # authors:
 # Jose G. Faisca <jose.faisca@gmail.com>
@@ -32,20 +37,59 @@
 ###############################################################################
 
 NAME="$1" 			# name argument
-UPDATE="$2"			# update name argument 
-RAND="" 			# short hex number
+NMC_NAME=""			# Namecoin name
+NMC_SPEC=""			# Namecoin namespace
+UPDATE="$2"			# update name argument
+SHORTEX="" 			# short hex number
 LONGHEX="" 			# longer hex code
 CONF=0 				# blocks / confirmations
 CONFMIN=12 			# minimum blocks before first update
-JSONFILE="$NAME.json" 		# JSON file with nameserver information
-NEWFILE="$NAME.new" 		# output of name_new command
-FIRSTUFILE="$NAME.firstupdate" 	# output of name_firstupdate command
-UPDATEFILE="$NAME.update"	# output of name_update command
-DATADIR="$HOME/namecoin"	# Namecoin data directory
+JSONFILE="" 			# JSON file with name information
+NEWFILE="" 			# output of name_new command
+FIRSTUFILE="" 			# output of name_firstupdate command
+UPDATEFILE=""			# output of name_update command
+#DATADIR="$HOME/.namecoin"	# Namecoin data directory
+DATADIR="/data/namecoin"
+
+get_specName(){
+ str="$1"
+ cpos=0
+ size=${#str}
+ tmp="${str%%/*}"
+ if [ "$tmp" != "$str" ]; then
+    cpos=${#tmp}
+    NMC_SPEC=${str:0:$cpos+1}
+    NMC_NAME=${str:$cpos+1:$size}
+    check_size "$NMC_NAME"
+    JSONFILE="$NMC_NAME.json"
+    NEWFILE="$NMC_NAME.new"
+    FIRSTUFILE="$NMC_NAME.firstupdate"
+    UPDATEFILE="$NMC_NAME.update"
+    return 0
+ else
+    return 1
+ fi
+}
+
+check_size(){
+  str="$1"
+  size=${#str}
+  if [ "$NMC_SPEC" == "d/" ]; then
+	if [ "$size" -gt 63 ]; then
+		echo "The name $NAME must be 63 characters or less."
+                return 1
+        fi
+  else
+  	if [ "$size" -gt 255 ]; then
+		echo "The name $NAME must be 255 characters or less."
+    		return 1
+ 	fi
+  fi
+  return 0
+}
 
 check_domain(){
- domain=$1
- domain="${domain:2}"
+ domain="$1"
  domain="@${domain}.bit"
  dots=$(grep -o "[.]" <<<"$domain" | wc -l)
  {
@@ -81,14 +125,14 @@ get_json(){
 name_firstupdate(){
   get_rand
   get_json
-  cmd="namecoin-cli -datadir=$DATADIR name_firstupdate $NAME $RAND $LONGHEX '${JSONVALUE}' > $FIRSTUFILE"
+  cmd="namecoin-cli -datadir=$DATADIR name_firstupdate $NAME $SHORTHEX $LONGHEX '${JSONVALUE}' > $FIRSTUFILE"
   eval $cmd
   cat $FIRSTUFILE
 }
 
 name_update(){
   get_json
-  cmd="namecoin-cli -datadir=$DATADIR name_update $NAME $RAND '${JSONVALUE}' > $UPDATEFILE"
+  cmd="namecoin-cli -datadir=$DATADIR name_update $NAME $SHORTHEX '${JSONVALUE}' > $UPDATEFILE"
   eval $cmd
   cat $UPDATEFILE
 }
@@ -115,13 +159,13 @@ get_rand(){
   array=(${str})
   LONGHEX=${array[1]}
   LONGHEX="${LONGHEX:1:${#LONGHEX}-3}"
-  RAND=${array[2]}
-  RAND="${RAND:1:${#RAND}-2}"
+  SHORTHEX=${array[2]}
+  SHORTHEX="${SHORTHEX:1:${#SHORTHEX}-2}"
 }
 
 check_file(){
 FILE="$1"
- if [ ! -f $FILE ]; then
+ if [ ! -s $FILE ]; then
    return 1
  else
    return 0
@@ -134,12 +178,16 @@ get_confirmations(){
  result=$(namecoin-cli -datadir=$DATADIR listtransactions | grep -B 1 -A 0 "$LONGHEX")
  IFS=': ' read -a array <<< $result
  CONF=${array[1]}
- CONF="${CONF//,}"
+ CONF=${CONF//,}
+ re='^[0-9]+$'
+ if ! [[ $CONF =~ $re ]] ; then
+   CONF=13 # not a number
+ fi
 }
 
 check_confirmations(){
   get_confirmations
-  if [ $CONF -gt $CONFMIN ]; then
+  if [ "$CONF" -gt "$CONFMIN" ]; then
     return 0
   else
     return 1
@@ -151,22 +199,48 @@ check_confirmations(){
 # VALIDATE ARGUMENTS
 if [ $# -gt 2 ] || [ $# -eq 0 ] ; then
    echo ""
-   echo "Usage: ${0} '<name>' [--update]"
-   echo "<name> is your name, in lowercase"
-   echo "use --update to update a registered name" 
+   echo "Usage: ${0} '<namespace/name>' [--update]"
+   echo ""
+   echo "<namespace/name> is your Namecoin name"
+   echo "--update, update a registered name"
    echo ""
    exit 1
 fi
 
-# VALIDATE DOMAIN
-[ ${STR:0:2} = "d/" ] && check_domain "$NAME"
+# CHECK DATA DIR
+if [ ! -d "$DATADIR" ] ; then
+  echo "Specified data directory $DATADIR does not exist"
+  echo ".. EXIT .."
+  exit 1
+fi
+
+# GET NAMESPACE/NAME
+get_specName "$NAME"
 if [ $? -ne 0 ] ; then
-        echo "The name $NAME is invalid for a .bit domain!"
+        echo "The name $NAME is invalid!"
         echo ".. EXIT .."
         exit 1
 fi
 
-# UPDATE NAME 
+# CHECK NAME SIZE
+check_size "$NMC_NAME"
+if [ $? -ne 0 ] ; then
+	echo "The name $NAME is invalid!"
+        echo ".. EXIT .."
+        exit 1
+fi
+
+# VALIDATE DOMAIN
+if [ "$NMC_SPEC" == "d/" ]; then
+check_domain "$NMC_NAME"
+   if [ $? -ne 0 ] ; then
+        echo "The name $NAME is not valid for a .bit domain!"
+        echo ".. EXIT .."
+        exit 1
+   fi
+fi
+
+# UPDATE NAME
 if [ "$UPDATE" == "--update" ] ; then
   name_show
   if [ $? -ne 0 ] ; then
@@ -246,18 +320,15 @@ if [ $? -eq 0 ] ; then
   name_firstupdate && echo ".. DONE .."
   exit 0
 else
-  echo "Pre-ordering name $NAME.bit"
+  echo "Pre-ordering name $NAME"
   read -p "Continue (y/n)? " choice
   case "$choice" in 
   	y|Y ) echo "yes";;
   	n|N ) echo ".. EXIT .." && exit 1;;
   	* ) echo "invalid option" && exit 1;;
   esac
-  echo "This will reserve the name $NAME.bit but not make it visible yet." 
-  echo "Wait at least 12 blocks, which is generally between 2 and 6 hours " 
-  echo "then run this script again to update your name."
-  echo ""
-  echo "DO NOT SHUTDOWN namecoin"
+  echo "This will reserve the name $NAME but not make it visible yet." 
+  echo "Wait at least 12 blocks, then run this script again to update your name."
   echo ""
   echo "Running ..."
   name_new && echo ".. DONE .."
