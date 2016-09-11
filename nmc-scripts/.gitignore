@@ -1,0 +1,6 @@
+*.new
+*.firstupdate
+*.update
+*.json
+!example.json
+*.pem

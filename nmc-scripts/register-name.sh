@@ -74,11 +74,21 @@ get_specName(){
 check_size(){
   str="$1"
   size=${#str}
-  if [ "$size" -gt 255 ]; then
-    return 1
+  if [ "$NMC_SPEC" == "d/" ]; then
+	if [ "$size" -gt 63 ]; then
+		echo "The name $NAME must be 63 characters or less."
+                return 1
+        else
+                return 0
+        fi
   else
-    return 0
- fi
+  	if [ "$size" -gt 255 ]; then
+		echo "The name $NAME must be 255 characters or less."
+    		return 1
+  	else
+    		return 0
+ 	fi
+  fi
 }
 
 check_domain(){
@@ -218,7 +228,7 @@ fi
 # CHECK NAME SIZE
 check_size "$NMC_NAME"
 if [ $? -ne 0 ] ; then
-        echo "The name $NAME is greater than 255!"
+	echo "The name $NAME is invalid!"
         echo ".. EXIT .."
         exit 1
 fi
