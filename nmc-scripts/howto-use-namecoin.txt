@@ -1,0 +1,105 @@
+<< How-To Namecoin >>
+
+
+create new address:
+> namecoin-cli getnewaddress <account_name>
+
+> namecoin-cli getnewaddress "demo1" 
+
+
+list addresses: 
+> namecoin-cli listreceivedbyaddress 0 true
+[
+  {
+    "address": "N1MSumQuVhQGihXCHJVdK1xa9nUQHXxThZ",
+    "account": "demo1",
+    "amount": 3.82438960,
+    "confirmations": 1056,
+    "label": "demo1",
+    "txids": [
+      "d561648a9cf6416e4ce476770006dc6dc7d78599ceb8ed940af2a9a44ce70eca"
+    ]
+  }, 
+  {
+    "address": "NHJoexbBQAc1spJmjRQxAXSXpnZbamuCJd",
+    "account": "",
+    "amount": 0.00000000,
+    "confirmations": 0,
+    "label": "",
+    "txids": [
+    ]
+  }
+]
+
+
+list accounts:
+> namecoin-cli listaccounts
+{  
+  "": -0.03206000,
+  "demo1": 3.82438960
+}
+
+
+encrypt wallet:
+> namecoin-cli encryptwallet <mypassphrase>
+
+
+lock wallet:
+> namecoin-cli walletlock
+
+
+unlock wallet:
+> namecoin-cli walletpassphrase <mypassphrase> <timeout> 
+
+
+change wallet password
+> namecoin-cli walletpassphrasechange <oldpassphrase> <newpassphrase>
+
+
+sign message:
+> namecoin-cli signmessage <namecoinaddress> <message>
+
+
+Verify a signed message:
+> namecoin-cli verifymessage <namecoinaddress> <signature> <message> 
+
+
+Register a name:
+"name" = (string, required) the name to register
+
+1) chek availability 
+
+> namecoin-cli name_show <name>
+
+> namecoin-cli name_show d/example
+error code: -4
+error message:
+name not found: 'd/example'
+
+2) register
+
+> namecoin-cli name_new <name>
+[
+  xxxxx,   (string) the txid, required for name_firstupdate
+  xxxxx    (string) random value for name_firstupdate
+]
+
+> namecoin-cli name_new d/example
+[
+  "15dce3e27da9c66b2371b38b5b583c55942043680c3b04ec37c8559847b8da45", 
+  "097f833eb08d725e99987662026716d8f84192a6"
+]
+
+3) First update (after step 2 Wait at least 12 blocks):
+
+Your registration is valid and publicly visible as soon as the name_firstupdate transaction is included in the block chain. This usually takes between 5 minutes and one hour. 
+
+> name_firstupdate <name> <rand> <tx> <value> ("toaddress")
+
+> namecoin-cli name_firstupdate d/example "097f833eb08d725e99987662026716d8f84192a6" "15dce3e27da9c66b2371b38b5b583c55942043680c3b04ec37c8559847b8da45" 'first update'
+
+4 Other updates:
+> namecoin-cli name_update <name>
+
+> namecoin-cli name_update d/example '{"ns": ["ns0.web-sweet-web.net", "ns1.web-sweet-web.net", "ns0.xname.org"]}'
+
