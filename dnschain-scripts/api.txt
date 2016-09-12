@@ -1,0 +1,12 @@
+The API URL follows this pattern:
+/{version}/{chain|resolver}/{resource}/{property}/{operation}{resp_format}?{args}
+
+
+SSL fingerprint for api.dnschain.net?â
+http://api.dnschain.net/v1/resolver/fingerprint
+
+What is the profile for user
+https://api.dnschain.net/v1/namecoin/key/u%2Fvitalik
+
+Fetch DNS over HTTPS (icann resolver))
+https://api.dnschain.net/v1/icann/key/okturtles.com
