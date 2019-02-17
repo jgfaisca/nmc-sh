@@ -3,6 +3,14 @@
 # Build and install Namecoin node from source (without wallet)
 # https://github.com/namecoin/namecoin-core/blob/master/doc/build-unix.md
 #
+# Usage: ./build-namecoin-core-nowallet.sh <cpu_cores>
+#
+# For instance, if you have 4 CPU cores, you can let make run 4 threads at once.
+# $ ./build-namecoin-core-nowallet.sh 4
+#
+
+# Default CPU cores = 1
+CPU_CORES=${1:-1}
 
 # -- Install main depencencies --
 apt-get update && apt-get install -y \
