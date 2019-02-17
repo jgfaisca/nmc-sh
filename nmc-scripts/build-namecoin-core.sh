@@ -4,9 +4,17 @@
 # Build and install Namecoin node from source (with wallet)
 # https://github.com/namecoin/namecoin-core/blob/master/doc/build-unix.md
 #
+# Usage: ./build-namecoin-core.sh <cpu_cores>
+#
+# For instance, if you have 4 CPU cores, you can let make run 4 threads at once.
+# $ ./build-namecoin-core.sh 4
+#
+
+# Default CPU cores = 1
+CPU_CORES=${1:-1}
 
 # -- Install main depencencies --
-apt-get update && apt-get install -y \
+sudo apt-get update && sudo apt-get install -y \
         curl iproute2 git net-tools libboost-all-dev \
         dh-autoreconf curl libcurl4-openssl-dev \
         git apg libboost-all-dev build-essential libtool \
@@ -16,13 +24,13 @@ apt-get update && apt-get install -y \
         pkg-config libzmq3-dev autotools-dev
 
 # -- Install BerkeleyDB 4.8 (required for the wallet) --
-apt-get install -y software-properties-common \
-        && add-apt-repository -y ppa:bitcoin/bitcoin \
-        && apt-get update \
-        && apt-get install -y libdb4.8-dev libdb4.8++-dev
+sudo apt-get install -y software-properties-common \
+        && sudo add-apt-repository -y ppa:bitcoin/bitcoin \
+        && sudo apt-get update \
+        && sudo apt-get install -y libdb4.8-dev libdb4.8++-dev
 
 # -- Clone Namecoin source repository --
-[ -d "namecoin-core" ] || git clone https://github.com/namecoin/namecoin-core.git
+git clone https://github.com/namecoin/namecoin-core.git
 
 # -- Build and install Namecoin --
 cd namecoin-core
@@ -35,13 +43,12 @@ cd namecoin-core
         --with-pic \
         --without-gui \
         --enable-upnp-default
-make && make install
+make -j $CPU_CORES && sudo make install
 
 # -- Clean --
 cd .. 
 rm -rf namecoin-core       
-apt-get autoremove -y
-apt-get clean 
-rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+sudo apt-get autoremove -y
+sudo apt-get clean 
 
 exit 0
