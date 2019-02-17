@@ -13,7 +13,7 @@
 CPU_CORES=${1:-1}
 
 # -- Install main depencencies --
-apt-get update && apt-get install -y \
+sudo apt-get update && sudo apt-get install -y \
         curl iproute2 git net-tools libboost-all-dev \
         dh-autoreconf curl libcurl4-openssl-dev \
         git apg libboost-all-dev build-essential libtool \
@@ -23,7 +23,7 @@ apt-get update && apt-get install -y \
         pkg-config libzmq3-dev autotools-dev
 
 # -- Clone Namecoin source repository --
-[ -d "namecoin-core" ] || git clone https://github.com/namecoin/namecoin-core.git
+git clone https://github.com/namecoin/namecoin-core.git
 
 # -- Build and install Namecoin --
 cd namecoin-core
@@ -36,13 +36,12 @@ cd namecoin-core
         --with-pic \
         --without-gui \
         --enable-upnp-default
-make && make install
+make && sudo make install
 
 # -- Clean --
 cd .. 
 rm -rf namecoin-core       
-apt-get autoremove -y
-apt-get clean 
-rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+sudo apt-get autoremove -y
+sudo apt-get clean 
 
 exit 0
