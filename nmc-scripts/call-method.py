@@ -3,13 +3,21 @@
 # pip install python-bitcoinrpc
 #
 
-rpc_user="rpc"
-rpc_password="secret"
+rpc_user = "rpc"
+rpc_password = "secret"
+rpc_host = "10.17.0.2"
+rpc_port = "8336"
 
 from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
+import logging
+
+logging.basicConfig()
+logging.getLogger("RPC").setLevel(logging.DEBUG)
 
 # rpc_user and rpc_password are set in the bitcoin.conf file
-rpc_connection = AuthServiceProxy("http://%s:%s@10.17.0.2:8336"%(rpc_user, rpc_password))
+rpc_connection = AuthServiceProxy(
+    "http://%s:%s@%s:%s"%(rpc_user, rpc_password, rpc_host, rpc_port),
+    timeout=120)
 
 #best_block_hash = rpc_connection.getbestblockhash()
 #print(rpc_connection.getblock(best_block_hash))
