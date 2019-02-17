@@ -36,7 +36,7 @@ cd namecoin-core
         --with-pic \
         --without-gui \
         --enable-upnp-default
-make && sudo make install
+make -j $CPU_CORES && sudo make install
 
 # -- Clean --
 cd .. 
