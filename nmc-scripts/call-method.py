@@ -29,5 +29,5 @@ rpc_connection = AuthServiceProxy(
 #print(block_times)
 
 json_data = rpc_connection.getblockchaininfo()
-print (json_data)
+print(json_data)
 
