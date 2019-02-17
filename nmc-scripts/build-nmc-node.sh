@@ -6,13 +6,14 @@
 #
 
 # -- Install main depencencies --
-apt-get update && apt-get install -y libboost-all-dev \
+apt-get update && apt-get install -y \
+        curl iproute2 git net-tools libboost-all-dev \
         dh-autoreconf curl libcurl4-openssl-dev \
         git apg libboost-all-dev build-essential libtool \
         libevent-dev wget bsdmainutils autoconf \
         apg libqrencode-dev libcurl4-openssl-dev \
         automake make libssl-dev libminiupnpc-dev \
-        pkg-config libzmq3-dev 
+        pkg-config libzmq3-dev autotools-dev
 
 # -- Install BerkeleyDB 4.8 (required for the wallet) --
 apt-get install -y software-properties-common \
