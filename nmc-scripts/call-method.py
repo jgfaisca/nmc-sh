@@ -15,6 +15,7 @@ logging.basicConfig()
 logging.getLogger("RPC").setLevel(logging.DEBUG)
 
 # rpc_user and rpc_password are set in the bitcoin.conf file
+# the timeout argument prevent "socket timed out" exceptions
 rpc_connection = AuthServiceProxy(
     "http://%s:%s@%s:%s"%(rpc_user, rpc_password, rpc_host, rpc_port),
     timeout=120)
