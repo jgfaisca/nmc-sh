@@ -144,11 +144,10 @@ name_new(){
 }
 
 name_show(){
-  { 
-  namecoin-cli -datadir=$DATADIR name_show $NAME 
-  } &> /dev/null
+  result=$(namecoin-cli -datadir=$DATADIR name_show $NAME) &> /dev/null
  if [ $? -eq 0 ]; then
-    return 0
+    expired=$(echo $result | python -c "import sys, json; print json.load(sys.stdin)['expired']")
+    [[ $expired == "True" || $expired == "true" ]] &&  return 1 || return 0
  else
     return 1 
  fi
@@ -238,7 +237,7 @@ fi
 if [ "$UPDATE" == "--update" ] ; then
   name_show
   if [ $? -ne 0 ] ; then
-   	echo "The name $NAME is not registered!"
+   	echo "The name $NAME is not registered or expired!"
   	echo ".. EXIT .."
   	exit 1
   fi
@@ -273,7 +272,7 @@ if [ $? -eq 0 ] ; then
   echo ".. EXIT .."
   exit 1
 else
-  echo "The name $NAME is not registered!"
+  echo "The name $NAME is not registered or expired!"
 fi
 
 check_file $NEWFILE
