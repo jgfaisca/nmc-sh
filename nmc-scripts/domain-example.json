@@ -14,6 +14,6 @@
     	"map": 
 	{ 
 		"www": { "alias": "" },
-		"mail": { "ns": ["ns01.nserver.com", "ns02.nserver.com", "ns03.nserver.com"] }
+		"mail": { "ns": ["ns01.nserver.com", "ns02.nserver.com"] }
 	}
 }
