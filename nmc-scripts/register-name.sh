@@ -52,74 +52,74 @@ UPDATEFILE=""			# output of name_update command
 DATADIR="/data/namecoin"
 
 get_specName(){
- str="$1"
- cpos=0
- size=${#str}
- tmp="${str%%/*}"
- if [ "$tmp" != "$str" ]; then
-    cpos=${#tmp}
-    NMC_SPEC=${str:0:$cpos+1}
-    NMC_NAME=${str:$cpos+1:$size}
-    check_size "$NMC_NAME"
-    JSONFILE="$NMC_NAME.json"
-    NEWFILE="$NMC_NAME.new"
-    FIRSTUFILE="$NMC_NAME.firstupdate"
-    UPDATEFILE="$NMC_NAME.update"
-    return 0
- else
-    return 1
- fi
+  str="$1"
+  cpos=0
+  size=${#str}
+  tmp="${str%%/*}"
+  if [ "$tmp" != "$str" ]; then
+     cpos=${#tmp}
+     NMC_SPEC=${str:0:$cpos+1}
+     NMC_NAME=${str:$cpos+1:$size}
+     check_size "$NMC_NAME"
+     JSONFILE="$NMC_NAME.json"
+     NEWFILE="$NMC_NAME.new"
+     FIRSTUFILE="$NMC_NAME.firstupdate"
+     UPDATEFILE="$NMC_NAME.update"
+     return 0
+  else
+     return 1
+  fi
 }
 
 check_size(){
   str="$1"
   size=${#str}
   if [ "$NMC_SPEC" == "d/" ]; then
-	if [ "$size" -gt 63 ]; then
-		echo "The name $NAME must be 63 characters or less."
-                return 1
-        fi
+     if [ "$size" -gt 63 ]; then
+	echo "The name $NAME must be 63 characters or less."
+        return 1
+     fi
   else
-  	if [ "$size" -gt 255 ]; then
-		echo "The name $NAME must be 255 characters or less."
-    		return 1
- 	fi
+     if [ "$size" -gt 255 ]; then
+	echo "The name $NAME must be 255 characters or less."
+    	return 1
+     fi
   fi
   return 0
 }
 
 check_domain(){
- domain="$1"
- domain="@${domain}.bit"
- dots=$(grep -o "[.]" <<<"$domain" | wc -l)
- {
-  echo $domain |  grep -E "^@[a-zA-Z0-9]+([-.]?[a-zA-Z0-9]+)*.[a-zA-Z]+$" 
- } &> /dev/null
- if [ $? -eq 0 ] && [ $dots -eq 1 ]; then
-    return 0
- else
-    return 1
- fi
+  domain="$1"
+  domain="@${domain}.bit"
+  dots=$(grep -o "[.]" <<<"$domain" | wc -l)
+  {
+    echo $domain |  grep -E "^@[a-zA-Z0-9]+([-.]?[a-zA-Z0-9]+)*.[a-zA-Z]+$" 
+  } &> /dev/null
+  if [ $? -eq 0 ] && [ $dots -eq 1 ]; then
+     return 0
+  else
+     return 1
+  fi
 }
 
 check_json(){
- {
-  cat "$JSONFILE" | python -mjson.tool
- } &> /dev/null
- if [ $? -eq 0 ]; then
-    return 0
- else
-    return 1
- fi
+  {
+    cat "$JSONFILE" | python -mjson.tool
+  } &> /dev/null
+  if [ $? -eq 0 ]; then
+     return 0
+  else
+     return 1
+  fi
 }
 
 get_json(){
- JSONVALUE=$(cat "$JSONFILE")
- if [ $? -eq 0 ]; then
-    return 0
- else
-    return 1
- fi
+  JSONVALUE=$(cat "$JSONFILE")
+  if [ $? -eq 0 ]; then
+     return 0
+  else
+     return 1
+  fi
 }
 
 name_firstupdate(){
@@ -163,12 +163,12 @@ get_rand(){
 }
 
 check_file(){
-FILE="$1"
- if [ ! -s $FILE ]; then
-   return 1
- else
-   return 0
- fi
+  FILE="$1"
+  if [ ! -s $FILE ]; then
+     return 1
+  else
+     return 0
+  fi
 }
 
 get_confirmations(){
@@ -181,9 +181,9 @@ get_confirmations(){
 check_confirmations(){
   get_confirmations
   if [ "$CONF" -gt "$CONFMIN" ]; then
-    return 0
+     return 0
   else
-    return 1
+     return 1
   fi
 }
 
@@ -194,138 +194,103 @@ if [ $# -gt 2 ] || [ $# -eq 0 ] ; then
    echo ""
    echo "Usage: ${0} '<namespace/name>' [--update]"
    echo ""
-   echo "<namespace/name> is your Namecoin name"
-   echo "--update, update a registered name"
+   echo "<namespace/name>, Namecoin name"
+   echo "[--update], update a registered name"
    echo ""
    exit 1
 fi
 
 # CHECK DATA DIR
 if [ ! -d "$DATADIR" ] ; then
-  echo "Specified data directory $DATADIR does not exist"
-  echo ".. EXIT .."
-  exit 1
+   echo "Specified data directory $DATADIR does not exist"
+   exit 1
 fi
 
 # GET NAMESPACE/NAME
 get_specName "$NAME"
 if [ $? -ne 0 ] ; then
-        echo "The name $NAME is invalid!"
-        echo ".. EXIT .."
-        exit 1
+   echo "The name $NAME is invalid!"
+   exit 1
 fi
 
 # CHECK NAME SIZE
 check_size "$NMC_NAME"
 if [ $? -ne 0 ] ; then
-	echo "The name $NAME is invalid!"
-        echo ".. EXIT .."
-        exit 1
+   echo "The name $NAME is invalid!"
+   exit 1
 fi
 
 # VALIDATE DOMAIN
 if [ "$NMC_SPEC" == "d/" ]; then
-check_domain "$NMC_NAME"
+   check_domain "$NMC_NAME"
    if [ $? -ne 0 ] ; then
-        echo "The name $NAME is not valid for a .bit domain!"
-        echo ".. EXIT .."
-        exit 1
+      echo "The name $NAME is not valid for a .bit domain!"
+      exit 1
    fi
 fi
 
 # UPDATE NAME
 if [ "$UPDATE" == "--update" ] ; then
-  name_show
-  if [ $? -ne 0 ] ; then
-   	echo "The name $NAME is not registered or expired!"
-  	echo ".. EXIT .."
-  	exit 1
-  fi
-  check_file $JSONFILE
-  if [ $? -ne 0 ] ; then
-        echo "Missing $JSONFILE file!"
-        echo ".. EXIT .."
-        exit 1
-  fi
-  check_json
-  if [ $? -ne 0 ] ; then
-        echo "$JSONFILE file is invalid!"
-        echo ".. EXIT .."
-        exit 1
-  fi 
-  echo "Update name $NAME"
-  read -p "Continue (y/n)? " choice
-  case "$choice" in
-        y|Y ) echo "yes";;
-        n|N ) echo ".. EXIT .." && exit 1;;
-        * ) echo "invalid option" && exit 1;;
-  esac
-  echo "Running ..."
-  name_update && echo ".. DONE .."
-  exit 0
+   name_show
+   if [ $? -ne 0 ] ; then
+      echo "The name $NAME is not registered or expired!"
+      exit 1
+   fi
+   check_file $JSONFILE
+   if [ $? -ne 0 ] ; then
+      echo "Missing $JSONFILE file!"
+      exit 1
+   fi
+   check_json
+   if [ $? -ne 0 ] ; then
+      echo "$JSONFILE file is invalid!"
+      exit 1
+   fi 
+   echo "Update name $NAME"
+   name_update
+   exit 0
 fi
 
 # PRE-ORDER & REGISTER NAME
 name_show
 if [ $? -eq 0 ] ; then
-  echo "The name $NAME is alredy registered!"
-  echo ".. EXIT .."
-  exit 1
+    echo "The name $NAME is alredy registered!"
+    exit 1
 else
-  echo "The name $NAME is not registered or expired!"
+    echo "The name $NAME is not registered or expired!"
 fi
-
 check_file $NEWFILE
 if [ $? -eq 0 ] ; then
-  check_confirmations
-  if [ $? -eq 0 ]; then
-    echo "Already pre-ordered, $CONF confirmations"
-  else
-   echo "Already pre-ordered, $CONF confirmations"
-   echo "Insuficient number of confirmations ( Min. = $CONFMIN )"
-   echo "Try again later!" 
-   echo ".. EXIT .."
-   exit 1  
-  fi
-  echo "Registering name $NAME"
-  read -p "Continue (y/n)? " choice
-  case "$choice" in
-        y|Y ) echo "yes";;
-        n|N ) echo ".. EXIT .." && exit 1;;
-        * ) echo "invalid option" && exit 1;;
-  esac
-  echo "Using file $NEWFILE"
-  check_file $JSONFILE
-  if [ $? -ne 0 ] ; then
-        echo "Missing $JSONFILE file!"
-        echo ".. EXIT .."
-        exit 1
-  fi
-  check_json
-  if [ $? -ne 0 ] ; then
-        echo "$JSONFILE file is invalid!"
-        echo ".. EXIT .."
-        exit 1
-  fi
-  check_file $JSONFILE
-  echo "Using file $JSONFILE"
-  echo "Running ..."
-  name_firstupdate && echo ".. DONE .."
-  exit 0
+    check_confirmations
+    if [ $? -eq 0 ]; then
+       echo "Already pre-ordered, $CONF confirmations"
+       echo "Insuficient number of confirmations ( Min. = $CONFMIN )"
+       echo "Try again later!" 
+       exit 1  
+    fi
+    echo "Registering name $NAME"
+    echo "Using file $NEWFILE"
+    check_file $JSONFILE
+    if [ $? -ne 0 ] ; then
+       echo "Missing $JSONFILE file!"
+       exit 1
+    fi
+    check_json
+    if [ $? -ne 0 ] ; then
+       echo "$JSONFILE file is invalid!"
+       exit 1
+    fi
+    check_file $JSONFILE
+    echo "Using file $JSONFILE"
+    name_firstupdate 
+    exit 0
 else
-  echo "Pre-ordering name $NAME"
-  read -p "Continue (y/n)? " choice
-  case "$choice" in 
-  	y|Y ) echo "yes";;
-  	n|N ) echo ".. EXIT .." && exit 1;;
-  	* ) echo "invalid option" && exit 1;;
-  esac
-  echo "This will reserve the name $NAME but not make it visible yet." 
-  echo "Wait at least 12 blocks, then run this script again to update your name."
-  echo ""
-  echo "Running ..."
-  name_new && echo ".. DONE .."
-  exit 0
+    echo "Pre-ordering name $NAME ..."
+    echo "This will reserve the name $NAME but not make it visible yet." 
+    echo "Wait at least 12 blocks, then run this script again to update your name."
+    echo ""
+    name_new 
+    exit 0
 fi
 
 exit 0
