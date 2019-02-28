@@ -1,4 +1,3 @@
-#
 #!/bin/bash
 #
 # Build and install Namecoin node from source (with wallet)
