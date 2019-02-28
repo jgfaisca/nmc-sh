@@ -173,16 +173,10 @@ FILE="$1"
 }
 
 get_confirmations(){
- get_rand
- result="" 
- result=$(namecoin-cli -datadir=$DATADIR listtransactions | grep -B 1 -A 0 "$LONGHEX")
- IFS=': ' read -a array <<< $result
- CONF=${array[1]}
- CONF=${CONF//,}
- re='^[0-9]+$'
- if ! [[ $CONF =~ $re ]] ; then
-   CONF=13 # not a number
- fi
+  get_rand
+  result="" 
+  result=$(namecoin-cli -datadir=$DATADIR gettransaction "$LONGHEX")
+  CONF=$(echo $result | python -c "import sys, json; print json.load(sys.stdin)['confirmations']")
 }
 
 check_confirmations(){
