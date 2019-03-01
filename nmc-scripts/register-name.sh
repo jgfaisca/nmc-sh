@@ -144,7 +144,7 @@ name_new(){
 }
 
 name_show(){
- result=$(namecoin-cli -datadir=$DATADIR name_show $NAME &> /dev/null)
+ result=$(namecoin-cli -datadir=$DATADIR name_show $NAME 2> /dev/null)
  if [ $? -eq 0 ]; then
     expired=$(echo $result | python -c "import sys, json; print json.load(sys.stdin)['expired']")
     [[ $expired == "True" || $expired == "true" ]] &&  return 1 || return 0
