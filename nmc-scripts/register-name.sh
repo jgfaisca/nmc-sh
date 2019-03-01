@@ -262,7 +262,9 @@ fi
 check_file $NEWFILE
 if [ $? -eq 0 ] ; then
     check_confirmations
-    if [ $? -eq 0 ]; then
+    if [ $? -eq 0 ]; then       	
+       echo "Already pre-ordered, $CONF confirmations"
+    else   
        echo "Already pre-ordered, $CONF confirmations"
        echo "Insuficient number of confirmations ( Min. = $CONFMIN )"
        echo "Try again later!" 
