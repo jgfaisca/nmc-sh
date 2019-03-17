@@ -31,11 +31,13 @@
 # 7 - To update the registered name, modify <name>.json and run:
 # ./register-name.sh '<namespace/name>' --update
 #
-# authors:
+# Authors:
 # Jose G. Faisca <jose.faisca@gmail.com>
 #
 ###############################################################################
 
+# variables
+TMP_DIR="./tmp"			# temporary directory
 NAME="$1" 			# name argument
 NMC_NAME=""			# Namecoin name
 NMC_SPEC=""			# Namecoin namespace
@@ -61,10 +63,10 @@ get_specName(){
      NMC_SPEC=${str:0:$cpos+1}
      NMC_NAME=${str:$cpos+1:$size}
      check_size "$NMC_NAME"
-     JSONFILE="$NMC_NAME.json"
-     NEWFILE="$NMC_NAME.new"
-     FIRSTUFILE="$NMC_NAME.firstupdate"
-     UPDATEFILE="$NMC_NAME.update"
+     JSONFILE="$TMP_DIR/$NMC_NAME.json"
+     NEWFILE="$TMP_DIR/$NMC_NAME.new"
+     FIRSTUFILE="$TMP_DIR/$NMC_NAME.firstupdate"
+     UPDATEFILE="$TMP_DIR/$NMC_NAME.update"
      return 0
   else
      return 1
@@ -189,7 +191,7 @@ check_confirmations(){
 
 # main
 
-# VALIDATE ARGUMENTS
+# validate arguments
 if [ $# -gt 2 ] || [ $# -eq 0 ] ; then
    echo ""
    echo "Usage: ${0} '<namespace/name>' [--update]"
@@ -200,27 +202,27 @@ if [ $# -gt 2 ] || [ $# -eq 0 ] ; then
    exit 1
 fi
 
-# CHECK DATA DIR
+# check data directory
 if [ ! -d "$DATADIR" ] ; then
    echo "Specified data directory $DATADIR does not exist"
    exit 1
 fi
 
-# GET NAMESPACE/NAME
+# get namespace/name
 get_specName "$NAME"
 if [ $? -ne 0 ] ; then
    echo "The name $NAME is invalid!"
    exit 1
 fi
 
-# CHECK NAME SIZE
+#  name size
 check_size "$NMC_NAME"
 if [ $? -ne 0 ] ; then
    echo "The name $NAME is invalid!"
    exit 1
 fi
 
-# VALIDATE DOMAIN
+# validate domain
 if [ "$NMC_SPEC" == "d/" ]; then
    check_domain "$NMC_NAME"
    if [ $? -ne 0 ] ; then
@@ -229,7 +231,10 @@ if [ "$NMC_SPEC" == "d/" ]; then
    fi
 fi
 
-# UPDATE NAME
+# create temporary directory
+[ -d "$TMP_DIR" ] || mkdir -p $TMP_DIR
+
+# update 
 if [ "$UPDATE" == "--update" ] ; then
    name_show
    if [ $? -ne 0 ] ; then
@@ -251,7 +256,7 @@ if [ "$UPDATE" == "--update" ] ; then
    exit 0
 fi
 
-# PRE-ORDER & REGISTER NAME
+# pre-order & register name
 name_show
 if [ $? -eq 0 ] ; then
     echo "The name $NAME is alredy registered!"
